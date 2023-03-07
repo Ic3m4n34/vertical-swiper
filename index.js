@@ -1,13 +1,40 @@
-const IMAGE_API_URL = 'https://picsum.photos/v2/list?limit=5';
+/**
+ * SLIDE_TYPE can be either 'image' or 'iframe'
+ * SLIDE_URL is the url of the image or iframe
+ */
 
-let images = [];
+const SLIDE1 = 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html';
+const SLIDE1_TYPE = 'iframe';
+const SLIDE2 = 'https://picsum.photos/200/300';
+const SLIDE2_TYPE = 'image';
+const SLIDE3 = 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html';
+const SLIDE3_TYPE = 'iframe';
+const SLIDE4 = 'https://picsum.photos/320/320';
+const SLIDE4_TYPE = 'image';
+// const SLIDE5 = 'https://picsum.photos/500/800';
+const SLIDE5 = '';
+const SLIDE5_TYPE = '';
+
+const templateContainer = document.getElementById('iqd_template');
+
+// is iframe, url or image
+const creativeType = 'image';
+
+/**
+ *  iqdCreateVericalSwiper
+ *  creates vertical swiper
+ */
+const assets = ['https://images.unsplash.com/photo-1678063464139-7c74fc3c2f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=738&q=80', 'https://images.unsplash.com/photo-1678031525208-7914264d03a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80', 'https://images.unsplash.com/photo-1678106741653-455a43825002?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', 'https://images.unsplash.com/photo-1678107658651-fccc4bdae865?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80', 'https://images.unsplash.com/photo-1677958811707-8399b2e9ba2e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=753&q=80'];
+const assetsUrls = ['https://google.com', 'https://google.com', 'https://google.com', 'https://google.com', 'https://google.com'];
+
+let filteredSlides = null;
 
 const viewportWidth = window.innerWidth;
 const viewportHeight = window.innerHeight;
 
 const imageContainerHeight = viewportHeight / 2;
 
-let currentImageIndex = 0;
+let currentSlideIndex = 0;
 
 // touch state
 let touchStartY = 0;
@@ -19,11 +46,63 @@ const chevronDown = `
 	</svg>
 `;
 
+const filterSlides = () => {
+	// only count slides that are not empty
+	filteredSlides = assets.filter((slide) => slide !== '');
+};
+
+// creates image node
+const generateImageNode = (url) => {
+	const div = document.createElement('div');
+
+	const img = document.createElement('img');
+	img.src = url;
+	img.style.height = `${imageContainerHeight}px`;
+
+	div.appendChild(img);
+
+	div.style.height = `${imageContainerHeight}px`;
+	div.style.width = `${viewportWidth}px`;
+
+	return div;
+};
+
+// create iframe node from url
+const generateIframeNode = (url) => {
+	const div = document.createElement('div');
+
+	const iframe = document.createElement('iframe');
+
+	iframe.src = url;
+	iframe.style.height = `${imageContainerHeight}px`;
+	iframe.style.width = `${viewportWidth}px`;
+
+	div.appendChild(iframe);
+
+	div.style.height = `${imageContainerHeight}px`;
+	div.style.width = `${viewportWidth}px`;
+
+	return div;
+};
+
+// create iframe node from string
+const generateIframeNodeFromString = (iframeString) => {
+	const div = document.createElement('div');
+
+	div.innerHTML = iframeString;
+
+	div.style.height = `${imageContainerHeight}px`;
+	div.style.width = '100%';
+
+	return div;
+};
+
 const parsePixelValue = (value) => {
 	const parsedValue = value.replace('px', '');
 	return +parsedValue;
 };
 
+// create button node
 const generateButton = (chevronDirection) => {
 	const button = document.createElement('button');
 	button.innerHTML = chevronDown;
@@ -62,51 +141,42 @@ const generateButton = (chevronDirection) => {
 	return button;
 };
 
-const fetchImages = async () => {
-	const response = await fetch(IMAGE_API_URL);
-	const resImages = await response.json();
-
-	const imageUrls = resImages.map((image) => image.download_url);
-
-	images = imageUrls;
-};
-
 /**
  * Generates an array of image nodes with their container divs
  * @param {string[]} images
  * @returns DomNode[]
- */
-const generateImageNodes = (imagesParameter) => {
-	const imageNodes = imagesParameter.map((image) => {
-		// Create a div to hold the image
-		const div = document.createElement('div');
+*/
+const generateSlideNodes = (swiperSlides) => {
+	if (creativeType === 'image') return swiperSlides.map((slideString) => generateImageNode(slideString));
+	if (creativeType === 'iframe') return swiperSlides.map((slideString) => generateIframeNodeFromString(slideString));
 
-		const img = document.createElement('img');
-		img.src = image;
-		img.style.height = `${imageContainerHeight}px`;
-
-		div.appendChild(img);
-
-		div.style.height = `${imageContainerHeight}px`;
-		div.style.width = `${viewportWidth}px`;
-
-		return div;
-	});
-	return imageNodes;
+	return swiperSlides.map((slideString) => generateIframeNode(slideString));
 };
 
+// style template container
+templateContainer.style.width = '100%';
+templateContainer.style.height = 'auto'; // TODO: check this
+
+console.info('assets', assets);
+console.log('creativeType', creativeType);
+
+document.getElementById('iqd_template').style.width = '100%';
+document.getElementById('iqd_template').style.height = '300px';
+document.getElementById('iqd_template').style.backgroundColor = 'red';
+
 const constructSwiper = async () => {
-	await fetchImages();
-	const imageNodes = generateImageNodes(images);
-	const swiper = document.querySelector('#swiper');
+	filterSlides();
+	const slideNodes = generateSlideNodes(filteredSlides);
+	const swiper = document.querySelector('#iqd_template');
 	const swiperContainer = document.createElement('div');
 	swiperContainer.setAttribute('id', 'swiper-container');
 
-	imageNodes.forEach((imageNode) => {
-		swiperContainer.appendChild(imageNode);
+	slideNodes.forEach((node) => {
+		swiperContainer.appendChild(node);
 	});
 
 	swiper.style.height = `${imageContainerHeight}px`;
+	swiper.style.width = '100%';
 	swiper.style.overflowY = 'hidden';
 	swiper.style.position = 'relative';
 
@@ -135,14 +205,14 @@ const handleButtonDownClick = () => {
 
 	swiperContainer.style.top = `${newTop}px`;
 
-	currentImageIndex++;
+	currentSlideIndex++;
 
-	if (currentImageIndex > 0) {
+	if (currentSlideIndex > 0) {
 		const buttonUp = document.querySelector('button.up');
 		buttonUp.style.visibility = 'visible';
 	}
 
-	if (currentImageIndex >= images.length - 1) {
+	if (currentSlideIndex >= filteredSlides.length - 1) {
 		const buttonDown = document.querySelector('button.down');
 		buttonDown.style.visibility = 'hidden';
 	}
@@ -155,32 +225,31 @@ const handleButtonUpClick = () => {
 
 	swiperContainer.style.top = `${newTop}px`;
 
-	currentImageIndex--;
+	currentSlideIndex--;
 
-	if (currentImageIndex === 0) {
+	if (currentSlideIndex === 0) {
 		const buttonUp = document.querySelector('button.up');
 		buttonUp.style.visibility = 'hidden';
 	}
 
-	if (currentImageIndex < images.length - 1) {
+	if (currentSlideIndex < filteredSlides.length - 1) {
 		const buttonDown = document.querySelector('button.down');
 		buttonDown.style.visibility = 'visible';
 	}
 };
 
 const handleTouchEvent = (event, touchStatus) => {
+	console.info('Handle touch event', event);
 	if (touchStatus === 'start') {
-		console.info('start', event.changedTouches[0].pageY);
 		touchStartY = event.changedTouches[0].pageY;
 	} else {
-		console.info('end', event.changedTouches[0].pageY);
 		touchEndY = event.changedTouches[0].pageY;
 
 		const difference = touchStartY - touchEndY;
 
-		if (difference > 0 && currentImageIndex < images.length - 1) {
+		if (difference > 0 && currentSlideIndex < filteredSlides.length - 1) {
 			handleButtonDownClick();
-		} else if (difference < 0 && currentImageIndex > 0) {
+		} else if (difference < 0 && currentSlideIndex > 0) {
 			handleButtonUpClick();
 		}
 	}
@@ -193,7 +262,7 @@ const addEventListeners = () => {
 	buttonUp.addEventListener('click', handleButtonUpClick);
 	buttonDown.addEventListener('click', handleButtonDownClick);
 
-	const swiper = document.querySelector('#swiper');
+	const swiper = document.querySelector('#iqd_template');
 
 	swiper.addEventListener('touchstart', (event) => {
 		handleTouchEvent(event, 'start');
@@ -202,6 +271,10 @@ const addEventListeners = () => {
 	swiper.addEventListener('touchend', (event) => {
 		handleTouchEvent(event, 'end');
 	});
+
+	/* swiper.addEventListener('touchmove', (event) => {
+			handleTouchMove(event);
+	}); */
 };
 
 constructSwiper();
