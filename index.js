@@ -18,14 +18,16 @@ const SLIDE5_TYPE = '';
 const templateContainer = document.getElementById('iqd_template');
 
 // is iframe, url or image
-const creativeType = 'url';
+const creativeType = 'iframe';
 
 /**
  *  iqdCreateVericalSwiper
  *  creates vertical swiper
  */
 // const assets = ['https://images.unsplash.com/photo-1678063464139-7c74fc3c2f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=738&q=80', 'https://images.unsplash.com/photo-1678031525208-7914264d03a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80', 'https://images.unsplash.com/photo-1678106741653-455a43825002?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', 'https://images.unsplash.com/photo-1678107658651-fccc4bdae865?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80', 'https://images.unsplash.com/photo-1677958811707-8399b2e9ba2e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=753&q=80'];
-const assets = ['https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2', 'https://yahoo.com', 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html', 'https://google.com', 'https://youtube.com'];
+// const assets = ['https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2', 'https://yahoo.com', 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html', 'https://google.com', 'https://youtube.com'];
+const assets = ['<iframe src="https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2" style="width: 100%; height:100%"></iframe>', '<iframe src="https://yahoo.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html" style="width: 100%; height:100%"></iframe>', '<iframe src="https://google.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://youtube.com" style="width: 100%; height:100%"></iframe>'];
+
 const assetsUrls = ['https://google.com', 'https://google.com', 'https://google.com', 'https://google.com', 'https://google.com'];
 
 let filteredSlides = null;
@@ -50,6 +52,19 @@ const chevronDown = `
 const filterSlides = () => {
 	// only count slides that are not empty
 	filteredSlides = assets.filter((slide) => slide !== '');
+};
+
+const generateIframeLayerDiv = () => {
+	// generate div that lies above iframe
+	const divAboveIframe = document.createElement('div');
+	divAboveIframe.style.height = `${imageContainerHeight}px`;
+	divAboveIframe.style.width = `${viewportWidth}px`;
+	divAboveIframe.style.position = 'absolute';
+	divAboveIframe.style.top = '0';
+	divAboveIframe.style.left = '0';
+	divAboveIframe.style.zIndex = '1';
+
+	return divAboveIframe;
 };
 
 // creates image node
@@ -84,14 +99,7 @@ const generateIframeNode = (url) => {
 	div.style.height = `${imageContainerHeight}px`;
 	div.style.width = `${viewportWidth}px`;
 
-	// generate div that lies above iframe
-	const divAboveIframe = document.createElement('div');
-	divAboveIframe.style.height = `${imageContainerHeight}px`;
-	divAboveIframe.style.width = `${viewportWidth}px`;
-	divAboveIframe.style.position = 'absolute';
-	divAboveIframe.style.top = '0';
-	divAboveIframe.style.left = '0';
-	divAboveIframe.style.zIndex = '1';
+	const divAboveIframe = generateIframeLayerDiv();
 
 	div.prepend(divAboveIframe);
 
@@ -101,11 +109,16 @@ const generateIframeNode = (url) => {
 // create iframe node from string
 const generateIframeNodeFromString = (iframeString) => {
 	const div = document.createElement('div');
+	div.style.position = 'relative';
 
 	div.innerHTML = iframeString;
 
 	div.style.height = `${imageContainerHeight}px`;
 	div.style.width = '100%';
+
+	const divAboveIframe = generateIframeLayerDiv();
+
+	div.prepend(divAboveIframe);
 
 	return div;
 };
