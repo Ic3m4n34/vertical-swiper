@@ -3,32 +3,20 @@
  * SLIDE_URL is the url of the image or iframe
  */
 
-const SLIDE1 = 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html';
-const SLIDE1_TYPE = 'iframe';
-const SLIDE2 = 'https://picsum.photos/200/300';
-const SLIDE2_TYPE = 'image';
-const SLIDE3 = 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html';
-const SLIDE3_TYPE = 'iframe';
-const SLIDE4 = 'https://picsum.photos/320/320';
-const SLIDE4_TYPE = 'image';
-// const SLIDE5 = 'https://picsum.photos/500/800';
-const SLIDE5 = '';
-const SLIDE5_TYPE = '';
-
 const templateContainer = document.getElementById('iqd_template');
 
 // is iframe, url or image
-const creativeType = 'iframe';
+const creativeType = 'image';
 
 /**
  *  iqdCreateVericalSwiper
  *  creates vertical swiper
  */
-// const assets = ['https://images.unsplash.com/photo-1678063464139-7c74fc3c2f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=738&q=80', 'https://images.unsplash.com/photo-1678031525208-7914264d03a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80', 'https://images.unsplash.com/photo-1678106741653-455a43825002?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', 'https://images.unsplash.com/photo-1678107658651-fccc4bdae865?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80', 'https://images.unsplash.com/photo-1677958811707-8399b2e9ba2e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=753&q=80'];
+const assets = ['https://images.unsplash.com/photo-1678063464139-7c74fc3c2f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=738&q=80', 'https://images.unsplash.com/photo-1678031525208-7914264d03a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80', 'https://images.unsplash.com/photo-1678106741653-455a43825002?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', 'https://images.unsplash.com/photo-1678107658651-fccc4bdae865?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80', 'https://images.unsplash.com/photo-1677958811707-8399b2e9ba2e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=753&q=80'];
 // const assets = ['https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2', 'https://yahoo.com', 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html', 'https://google.com', 'https://youtube.com'];
-const assets = ['<iframe src="https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2" style="width: 100%; height:100%"></iframe>', '<iframe src="https://yahoo.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html" style="width: 100%; height:100%"></iframe>', '<iframe src="https://google.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://youtube.com" style="width: 100%; height:100%"></iframe>'];
+// const assets = ['<iframe src="https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2" style="width: 100%; height:100%"></iframe>', '<iframe src="https://yahoo.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html" style="width: 100%; height:100%"></iframe>', '<iframe src="https://google.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://youtube.com" style="width: 100%; height:100%"></iframe>'];
 
-const assetsUrls = ['https://google.com', 'https://google.com', 'https://google.com', 'https://google.com', 'https://google.com'];
+const assetsUrls = ['https://google.com', 'https://youtube.com', 'https://yahoo.com', 'https://ebay.com', 'https://twitter.com'];
 
 let filteredSlides = null;
 
@@ -68,19 +56,23 @@ const generateIframeLayerDiv = () => {
 };
 
 // creates image node
-const generateImageNode = (url) => {
-	const div = document.createElement('div');
+const generateImageNode = (url, linkUrl) => {
+	const link = document.createElement('a');
+	link.style.display = 'block';
+
+	link.href = linkUrl;
+	link.target = '_blank';
 
 	const img = document.createElement('img');
 	img.src = url;
-	img.style.height = `${imageContainerHeight}px`;
+	img.style.width = `${viewportWidth}px`;
 
-	div.appendChild(img);
+	link.appendChild(img);
 
-	div.style.height = `${imageContainerHeight}px`;
-	div.style.width = `${viewportWidth}px`;
+	link.style.height = `${imageContainerHeight}px`;
+	link.style.width = `${viewportWidth}px`;
 
-	return div;
+	return link;
 };
 
 // create iframe node from url
@@ -150,6 +142,7 @@ const generateButton = (chevronDirection) => {
 
 	button.style.position = 'absolute';
 	button.style.bottom = '50%';
+	button.style.zIndex = '2';
 
 	if (chevronDirection === 'up') {
 		button.style.transform = 'rotate(180deg)';
@@ -173,7 +166,7 @@ const generateButton = (chevronDirection) => {
  * @returns DomNode[]
 */
 const generateSlideNodes = (swiperSlides) => {
-	if (creativeType === 'image') return swiperSlides.map((slideString) => generateImageNode(slideString));
+	if (creativeType === 'image') return swiperSlides.map((slideString, index) => generateImageNode(slideString, assetsUrls[index]));
 	if (creativeType === 'iframe') return swiperSlides.map((slideString) => generateIframeNodeFromString(slideString));
 
 	return swiperSlides.map((slideString) => generateIframeNode(slideString));
@@ -182,9 +175,6 @@ const generateSlideNodes = (swiperSlides) => {
 // style template container
 templateContainer.style.width = '100%';
 templateContainer.style.height = 'auto'; // TODO: check this
-
-console.info('assets', assets);
-console.log('creativeType', creativeType);
 
 document.getElementById('iqd_template').style.width = '100%';
 document.getElementById('iqd_template').style.height = '300px';
@@ -265,7 +255,6 @@ const handleButtonUpClick = () => {
 };
 
 const handleTouchEvent = (event, touchStatus) => {
-	console.info('Handle touch event', event);
 	if (touchStatus === 'start') {
 		touchStartY = event.changedTouches[0].pageY;
 	} else {
@@ -297,28 +286,10 @@ const addEventListeners = () => {
 	swiper.addEventListener('touchend', (event) => {
 		handleTouchEvent(event, 'end');
 	});
-
-	/* const iframes = document.querySelectorAll('iframe');
-
-	iframes.forEach((iframe) => {
-		console.log('iframe', iframe);
-		iframe.addEventListener('touchstart', (event) => {
-			handleTouchEvent(event, 'start');
-		});
-
-		iframe.addEventListener('touchend', (event) => {
-			handleTouchEvent(event, 'end');
-		});
-	}); */
-
-	/* swiper.addEventListener('touchmove', (event) => {
-			handleTouchMove(event);
-	}); */
 };
 
 constructSwiper();
 
-// TODO: find a better way to add event listeners
 setTimeout(() => {
 	addEventListeners();
 }, 200);
