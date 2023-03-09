@@ -25,6 +25,8 @@ const viewportHeight = window.innerHeight;
 
 const imageContainerHeight = viewportHeight / 2;
 
+const SWIPE_TOLERANCE = 5;
+
 let currentSlideIndex = 0;
 
 // touch state
@@ -201,7 +203,7 @@ const constructSwiper = async () => {
 	swiperContainer.style.left = '0';
 
 	swiperContainer.style.willChange = 'top';
-	swiperContainer.style.transition = 'top 0.5s ease-in-out';
+	swiperContainer.style.transition = 'top 0.1s ease-in-out';
 
 	swiper.appendChild(swiperContainer);
 
@@ -262,7 +264,9 @@ const handleTouchEvent = (event, touchStatus) => {
 
 		const difference = touchStartY - touchEndY;
 
-		if (difference > 0 && currentSlideIndex < filteredSlides.length - 1) {
+		if (difference < SWIPE_TOLERANCE && difference > -SWIPE_TOLERANCE) {
+			window.open(assetsUrls[currentSlideIndex], '_blank');
+		} else if (difference > 0 && currentSlideIndex < filteredSlides.length - 1) {
 			handleButtonDownClick();
 		} else if (difference < 0 && currentSlideIndex > 0) {
 			handleButtonUpClick();
@@ -280,12 +284,31 @@ const addEventListeners = () => {
 	const swiper = document.querySelector('#iqd_template');
 
 	swiper.addEventListener('touchstart', (event) => {
+		event.preventDefault();
 		handleTouchEvent(event, 'start');
 	});
 
 	swiper.addEventListener('touchend', (event) => {
+		event.preventDefault();
 		handleTouchEvent(event, 'end');
 	});
+
+	/* document.addEventListener('scroll', () => {
+		const swiperContainer = document.querySelector('#iqd_template');
+		const rect = swiperContainer.getBoundingClientRect();
+
+		const isLastSlide = currentSlideIndex === filteredSlides.length - 1;
+
+		console.log('isLastSlide', isLastSlide);
+
+		console.log('top', rect.top);
+		if (rect.top <= 0 && !isLastSlide) {
+			swiperContainer.style.position = 'fixed';
+			swiperContainer.style.top = '0';
+		} else {
+			swiperContainer.style.position = 'relative';
+		}
+	}); */
 };
 
 constructSwiper();
