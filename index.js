@@ -5,9 +5,6 @@
 
 const templateContainer = document.getElementById('iqd_template');
 
-// is iframe, url or image
-const creativeType = 'image';
-
 /**
  *  iqdCreateVericalSwiper
  *  creates vertical swiper
@@ -44,19 +41,6 @@ const filterSlides = () => {
 	filteredSlides = assets.filter((slide) => slide !== '');
 };
 
-const generateIframeLayerDiv = () => {
-	// generate div that lies above iframe
-	const divAboveIframe = document.createElement('div');
-	divAboveIframe.style.height = `${imageContainerHeight}px`;
-	divAboveIframe.style.width = `${viewportWidth}px`;
-	divAboveIframe.style.position = 'absolute';
-	divAboveIframe.style.top = '0';
-	divAboveIframe.style.left = '0';
-	divAboveIframe.style.zIndex = '1';
-
-	return divAboveIframe;
-};
-
 // creates image node
 const generateImageNode = (url, linkUrl) => {
 	const link = document.createElement('a');
@@ -75,46 +59,6 @@ const generateImageNode = (url, linkUrl) => {
 	link.style.width = `${viewportWidth}px`;
 
 	return link;
-};
-
-// create iframe node from url
-const generateIframeNode = (url) => {
-	const div = document.createElement('div');
-	div.style.position = 'relative';
-
-	const iframe = document.createElement('iframe');
-
-	iframe.src = url;
-	iframe.style.height = `${imageContainerHeight}px`;
-	iframe.style.width = `${viewportWidth}px`;
-
-	div.appendChild(iframe);
-
-	div.style.height = `${imageContainerHeight}px`;
-	div.style.width = `${viewportWidth}px`;
-
-	const divAboveIframe = generateIframeLayerDiv();
-
-	div.prepend(divAboveIframe);
-
-	return div;
-};
-
-// create iframe node from string
-const generateIframeNodeFromString = (iframeString) => {
-	const div = document.createElement('div');
-	div.style.position = 'relative';
-
-	div.innerHTML = iframeString;
-
-	div.style.height = `${imageContainerHeight}px`;
-	div.style.width = '100%';
-
-	const divAboveIframe = generateIframeLayerDiv();
-
-	div.prepend(divAboveIframe);
-
-	return div;
 };
 
 const parsePixelValue = (value) => {
@@ -162,18 +106,6 @@ const generateButton = (chevronDirection) => {
 	return button;
 };
 
-/**
- * Generates an array of image nodes with their container divs
- * @param {string[]} images
- * @returns DomNode[]
-*/
-const generateSlideNodes = (swiperSlides) => {
-	if (creativeType === 'image') return swiperSlides.map((slideString, index) => generateImageNode(slideString, assetsUrls[index]));
-	if (creativeType === 'iframe') return swiperSlides.map((slideString) => generateIframeNodeFromString(slideString));
-
-	return swiperSlides.map((slideString) => generateIframeNode(slideString));
-};
-
 // style template container
 templateContainer.style.width = '100%';
 templateContainer.style.height = 'auto'; // TODO: check this
@@ -184,7 +116,7 @@ document.getElementById('iqd_template').style.backgroundColor = 'lightgray';
 
 const constructSwiper = async () => {
 	filterSlides();
-	const slideNodes = generateSlideNodes(filteredSlides);
+	const slideNodes = filteredSlides.map((slideString, index) => generateImageNode(slideString, assetsUrls[index])); // eslint-disable-line
 	const swiper = document.querySelector('#iqd_template');
 	const swiperContainer = document.createElement('div');
 	swiperContainer.setAttribute('id', 'swiper-container');
@@ -203,7 +135,7 @@ const constructSwiper = async () => {
 	swiperContainer.style.left = '0';
 
 	swiperContainer.style.willChange = 'top';
-	swiperContainer.style.transition = 'top 0.1s ease-in-out';
+	swiperContainer.style.transition = 'top 0.5s ease-in-out';
 
 	swiper.appendChild(swiperContainer);
 
@@ -281,7 +213,7 @@ const addEventListeners = () => {
 	buttonUp.addEventListener('click', handleButtonUpClick);
 	buttonDown.addEventListener('click', handleButtonDownClick);
 
-	const swiper = document.querySelector('#iqd_template');
+	const swiper = document.querySelector('#swiper-container');
 
 	swiper.addEventListener('touchstart', (event) => {
 		event.preventDefault();
@@ -292,23 +224,6 @@ const addEventListeners = () => {
 		event.preventDefault();
 		handleTouchEvent(event, 'end');
 	});
-
-	/* document.addEventListener('scroll', () => {
-		const swiperContainer = document.querySelector('#iqd_template');
-		const rect = swiperContainer.getBoundingClientRect();
-
-		const isLastSlide = currentSlideIndex === filteredSlides.length - 1;
-
-		console.log('isLastSlide', isLastSlide);
-
-		console.log('top', rect.top);
-		if (rect.top <= 0 && !isLastSlide) {
-			swiperContainer.style.position = 'fixed';
-			swiperContainer.style.top = '0';
-		} else {
-			swiperContainer.style.position = 'relative';
-		}
-	}); */
 };
 
 constructSwiper();
