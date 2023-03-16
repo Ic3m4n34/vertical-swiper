@@ -4,41 +4,103 @@
  */
 
 const templateContainer = document.getElementById('iqd_template');
-
 /**
  *  iqdCreateVericalSwiper
  *  creates vertical swiper
  */
-const assets = ['https://images.unsplash.com/photo-1678063464139-7c74fc3c2f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=738&q=80', 'https://images.unsplash.com/photo-1678031525208-7914264d03a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80', 'https://images.unsplash.com/photo-1678106741653-455a43825002?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', 'https://images.unsplash.com/photo-1678107658651-fccc4bdae865?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80', 'https://images.unsplash.com/photo-1677958811707-8399b2e9ba2e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=753&q=80'];
+const assets = [
+	'https://images.unsplash.com/photo-1678063464139-7c74fc3c2f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=738&q=80',
+	'https://images.unsplash.com/photo-1678031525208-7914264d03a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80',
+	'https://images.unsplash.com/photo-1678106741653-455a43825002?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+	'https://images.unsplash.com/photo-1678107658651-fccc4bdae865?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80',
+	'https://images.unsplash.com/photo-1677958811707-8399b2e9ba2e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=753&q=80',
+];
 // const assets = ['https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2', 'https://yahoo.com', 'https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html', 'https://google.com', 'https://youtube.com'];
 // const assets = ['<iframe src="https://medium.com/@pavankapoor31/how-to-use-vs-code-live-server-local-host-on-mobile-phone-8b38a62117d2" style="width: 100%; height:100%"></iframe>', '<iframe src="https://yahoo.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://s0.2mdn.net/5059743/1498622695297/OB_Merchant_Generic_300x250/OB_Merchant_Generic_300x250.html" style="width: 100%; height:100%"></iframe>', '<iframe src="https://google.com" style="width: 100%; height:100%"></iframe>', '<iframe src="https://youtube.com" style="width: 100%; height:100%"></iframe>'];
 
 const assetsUrls = ['https://google.com', 'https://youtube.com', 'https://yahoo.com', 'https://ebay.com', 'https://twitter.com'];
 
-let filteredSlides = null;
+let slideCount = null;
+let renderedSlides = null;
 
-const viewportWidth = window.innerWidth;
-const viewportHeight = window.innerHeight;
+let activeSlide = null;
 
-const imageContainerHeight = viewportHeight / 2;
+const buttonColorFromAdServer = '#ef200e';
 
 const SWIPE_TOLERANCE = 5;
 
-let currentSlideIndex = 0;
+const filteredSlides = [];
+
+const viewportWidth = window.innerWidth;
+const imageContainerHeight = 320;
+
+/* if (!isAppPlatform) {
+	const styleParentIframe = () => {
+		// Get the parent window
+		const parentWindow = window.parent;
+
+		// Get the iframe element that contains the current window
+		const iframeElement = window.frameElement;
+		const iframeContainer = iframeElement.parentElement;
+		const adTileDiv = iframeContainer.parentElement;
+		const adTileContainer = adTileDiv.parentElement;
+
+		// heights
+		const adTileContainerHeight = adTileContainer.offsetHeight;
+		const iframeContainerHeight = iframeContainer.offsetHeight;
+
+		// widths
+		const parentWindowWidth = parentWindow.innerWidth;
+
+		iframeElement.style.width = `${parentWindowWidth}px`;
+
+		return {
+			adTileContainerHeight,
+			iframeContainerHeight,
+			parentWindowWidth,
+		};
+	};
+
+	const { iframeContainerHeight, parentWindowWidth } = styleParentIframe();
+
+	viewportWidth = parentWindowWidth;
+	viewportHeight = window.innerHeight;
+
+	imageContainerHeight = iframeContainerHeight;
+} else {
+	// viewportWidth = window.parent.document.body.clientWidth; // TODO: is this working?
+	viewportWidth = 320; // ? check this
+	viewportHeight = window.innerHeight;
+
+	// we need the height of the add space
+	imageContainerHeight = 320; // TODO: remove this
+
+	// _iqdNS.sendAppEvent("setsize", "100:100", 3, 300); // * works here
+} */
 
 // touch state
-let touchStartY = 0;
-let touchEndY = 0;
+let startY = 0;
 
 const chevronDown = `
-	<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-		<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-	</svg>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+		</svg>
 `;
 
 const filterSlides = () => {
 	// only count slides that are not empty
-	filteredSlides = assets.filter((slide) => slide !== '');
+	const notEmptySlides = assets.filter((slide) => slide !== '');
+	filteredSlides.push(...notEmptySlides, ...notEmptySlides);
+
+	console.info('filteredSlides', filteredSlides);
+
+	slideCount = notEmptySlides.length;
+	activeSlide = slideCount;
+	renderedSlides = slideCount * 2;
+
+	console.log('slideCount', slideCount);
+	console.log('activeSlide', activeSlide);
+	console.log('renderedSlides', renderedSlides);
 };
 
 // creates image node
@@ -51,12 +113,15 @@ const generateImageNode = (url, linkUrl) => {
 
 	const img = document.createElement('img');
 	img.src = url;
-	img.style.width = `${viewportWidth}px`;
+	img.style.width = '100%';
 
 	link.appendChild(img);
 
+	console.log('imageContainerHeight', imageContainerHeight);
+
 	link.style.height = `${imageContainerHeight}px`;
-	link.style.width = `${viewportWidth}px`;
+	link.style.width = '100%';
+	link.style.overflow = 'hidden';
 
 	return link;
 };
@@ -71,18 +136,20 @@ const generateButton = (chevronDirection) => {
 	const button = document.createElement('button');
 	button.innerHTML = chevronDown;
 
+	const buttonColor = buttonColorFromAdServer || 'green';
+
 	// style svg
-	button.childNodes[1].style.height = '24px';
-	button.childNodes[1].style.width = '24px';
+	button.childNodes[1].style.height = '36px';
+	button.childNodes[1].style.width = '36px';
 
 	// normalize button
-	button.style.height = '24px';
-	button.style.width = '24px';
+	button.style.height = '36px';
+	button.style.width = '36px';
 	button.style.padding = '0';
 	button.style.border = 'none';
 	button.style.outline = 'none';
 
-	button.style.backgroundColor = 'green';
+	button.style.backgroundColor = buttonColor;
 	button.style.borderRadius = '50%';
 	button.style.color = 'white';
 
@@ -110,10 +177,6 @@ const generateButton = (chevronDirection) => {
 templateContainer.style.width = '100%';
 templateContainer.style.height = 'auto'; // TODO: check this
 
-document.getElementById('iqd_template').style.width = '100%';
-document.getElementById('iqd_template').style.height = '300px';
-document.getElementById('iqd_template').style.backgroundColor = 'lightgray';
-
 const constructSwiper = async () => {
 	filterSlides();
 	const slideNodes = filteredSlides.map((slideString, index) => generateImageNode(slideString, assetsUrls[index])); // eslint-disable-line
@@ -126,16 +189,18 @@ const constructSwiper = async () => {
 	});
 
 	swiper.style.height = `${imageContainerHeight}px`;
-	swiper.style.width = '100%';
+	swiper.style.width = `${viewportWidth}px`; // TODO: check if this is applied
 	swiper.style.overflowY = 'hidden';
 	swiper.style.position = 'relative';
+
+	swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
 
 	swiperContainer.style.position = 'absolute';
 	swiperContainer.style.top = '0';
 	swiperContainer.style.left = '0';
 
-	swiperContainer.style.willChange = 'top';
-	swiperContainer.style.transition = 'top 0.5s ease-in-out';
+	/* swiperContainer.style.willChange = 'top';
+	swiperContainer.style.transition = 'top 0.5s ease-in-out'; */
 
 	swiper.appendChild(swiperContainer);
 
@@ -155,14 +220,14 @@ const handleButtonDownClick = () => {
 
 	swiperContainer.style.top = `${newTop}px`;
 
-	currentSlideIndex++;
+	activeSlide++;
 
-	if (currentSlideIndex > 0) {
+	if (activeSlide > 0) {
 		const buttonUp = document.querySelector('button.up');
 		buttonUp.style.visibility = 'visible';
 	}
 
-	if (currentSlideIndex >= filteredSlides.length - 1) {
+	if (activeSlide >= filteredSlides.length - 1) {
 		const buttonDown = document.querySelector('button.down');
 		buttonDown.style.visibility = 'hidden';
 	}
@@ -175,36 +240,72 @@ const handleButtonUpClick = () => {
 
 	swiperContainer.style.top = `${newTop}px`;
 
-	currentSlideIndex--;
+	activeSlide--;
 
-	if (currentSlideIndex === 0) {
+	if (activeSlide === 0) {
 		const buttonUp = document.querySelector('button.up');
 		buttonUp.style.visibility = 'hidden';
 	}
 
-	if (currentSlideIndex < filteredSlides.length - 1) {
+	if (activeSlide < filteredSlides.length - 1) {
 		const buttonDown = document.querySelector('button.down');
 		buttonDown.style.visibility = 'visible';
 	}
 };
 
-const handleTouchEvent = (event, touchStatus) => {
-	if (touchStatus === 'start') {
-		touchStartY = event.changedTouches[0].pageY;
-	} else {
-		touchEndY = event.changedTouches[0].pageY;
+function startSwipe(e) {
+	const swiperContainer = document.querySelector('#swiper-container');
 
-		const difference = touchStartY - touchEndY;
+	startY = e.clientY;
+	swiperContainer.style.transition = 'none';
+}
 
-		if (difference < SWIPE_TOLERANCE && difference > -SWIPE_TOLERANCE) {
-			window.open(assetsUrls[currentSlideIndex], '_blank');
-		} else if (difference > 0 && currentSlideIndex < filteredSlides.length - 1) {
-			handleButtonDownClick();
-		} else if (difference < 0 && currentSlideIndex > 0) {
-			handleButtonUpClick();
+function endSwipe(e) {
+	const swiperContainer = document.querySelector('#swiper-container');
+
+	const threshold = SWIPE_TOLERANCE;
+	const distance = startY - e.clientY;
+
+	if (Math.abs(distance) > threshold) {
+		if (distance > 0) {
+			activeSlide++;
+		} else if (distance < 0) {
+			activeSlide--;
 		}
 	}
-};
+
+	swiperContainer.style.transition = 'transform 0.3s';
+	swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
+
+	console.log('activeSlide', activeSlide);
+	console.log('renderedSlides - 1', renderedSlides - 1);
+
+	if (activeSlide >= renderedSlides - 1) {
+		console.log('hier');
+		setTimeout(() => {
+			swiperContainer.style.transition = 'none';
+			activeSlide = slideCount - 1;
+			swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
+			/* swiperContainer.style.transition = 'none';
+			activeSlide = slideCount;
+			swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`; */
+			/* setTimeout(() => {
+				swiperContainer.style.transition = 'transform 0.3s';
+				console.log('transform');
+			}, 50); */
+		}, 300);
+	} else if (activeSlide <= 0) {
+		console.log('da');
+		setTimeout(() => {
+			swiperContainer.style.transition = 'none';
+			activeSlide = slideCount;
+			swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
+			/* 			setTimeout(() => {
+				swiperContainer.style.transition = 'transform 0.3s';
+			}, 50); */
+		}, 300);
+	}
+}
 
 const addEventListeners = () => {
 	const buttonUp = document.querySelector('button.up');
@@ -215,14 +316,13 @@ const addEventListeners = () => {
 
 	const swiper = document.querySelector('#swiper-container');
 
-	swiper.addEventListener('touchstart', (event) => {
-		event.preventDefault();
-		handleTouchEvent(event, 'start');
+	swiper.addEventListener('touchstart', (e) => {
+		e.preventDefault();
+		startSwipe(e.touches[0]);
 	});
-
-	swiper.addEventListener('touchend', (event) => {
-		event.preventDefault();
-		handleTouchEvent(event, 'end');
+	swiper.addEventListener('touchend', (e) => {
+		e.preventDefault();
+		endSwipe(e.changedTouches[0]);
 	});
 };
 
