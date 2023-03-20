@@ -92,15 +92,9 @@ const filterSlides = () => {
 	const notEmptySlides = assets.filter((slide) => slide !== '');
 	filteredSlides.push(...notEmptySlides, ...notEmptySlides);
 
-	console.info('filteredSlides', filteredSlides);
-
 	slideCount = notEmptySlides.length;
 	activeSlide = slideCount;
 	renderedSlides = slideCount * 2;
-
-	console.log('slideCount', slideCount);
-	console.log('activeSlide', activeSlide);
-	console.log('renderedSlides', renderedSlides);
 };
 
 // creates image node
@@ -116,8 +110,6 @@ const generateImageNode = (url, linkUrl) => {
 	img.style.width = '100%';
 
 	link.appendChild(img);
-
-	console.log('imageContainerHeight', imageContainerHeight);
 
 	link.style.height = `${imageContainerHeight}px`;
 	link.style.width = '100%';
@@ -161,9 +153,6 @@ const generateButton = (chevronDirection) => {
 		button.style.transform = 'rotate(180deg)';
 		button.classList.add('up');
 
-		// up is hidden initially
-		button.style.visibility = 'hidden';
-
 		button.style.left = '12px';
 	} else {
 		button.style.right = '12px';
@@ -175,7 +164,7 @@ const generateButton = (chevronDirection) => {
 
 // style template container
 templateContainer.style.width = '100%';
-templateContainer.style.height = 'auto'; // TODO: check this
+templateContainer.style.height = 'auto';
 
 const constructSwiper = async () => {
 	filterSlides();
@@ -189,7 +178,7 @@ const constructSwiper = async () => {
 	});
 
 	swiper.style.height = `${imageContainerHeight}px`;
-	swiper.style.width = `${viewportWidth}px`; // TODO: check if this is applied
+	swiper.style.width = `${viewportWidth}px`;
 	swiper.style.overflowY = 'hidden';
 	swiper.style.position = 'relative';
 
@@ -198,9 +187,6 @@ const constructSwiper = async () => {
 	swiperContainer.style.position = 'absolute';
 	swiperContainer.style.top = '0';
 	swiperContainer.style.left = '0';
-
-	/* swiperContainer.style.willChange = 'top';
-	swiperContainer.style.transition = 'top 0.5s ease-in-out'; */
 
 	swiper.appendChild(swiperContainer);
 
@@ -213,46 +199,6 @@ const constructSwiper = async () => {
 	swiper.appendChild(buttonDown);
 };
 
-const handleButtonDownClick = () => {
-	const swiperContainer = document.querySelector('#swiper-container');
-	const currentTop = swiperContainer.style.top;
-	const newTop = parsePixelValue(currentTop) - imageContainerHeight;
-
-	swiperContainer.style.top = `${newTop}px`;
-
-	activeSlide++;
-
-	if (activeSlide > 0) {
-		const buttonUp = document.querySelector('button.up');
-		buttonUp.style.visibility = 'visible';
-	}
-
-	if (activeSlide >= filteredSlides.length - 1) {
-		const buttonDown = document.querySelector('button.down');
-		buttonDown.style.visibility = 'hidden';
-	}
-};
-
-const handleButtonUpClick = () => {
-	const swiperContainer = document.querySelector('#swiper-container');
-	const currentTop = swiperContainer.style.top;
-	const newTop = parsePixelValue(currentTop) + imageContainerHeight;
-
-	swiperContainer.style.top = `${newTop}px`;
-
-	activeSlide--;
-
-	if (activeSlide === 0) {
-		const buttonUp = document.querySelector('button.up');
-		buttonUp.style.visibility = 'hidden';
-	}
-
-	if (activeSlide < filteredSlides.length - 1) {
-		const buttonDown = document.querySelector('button.down');
-		buttonDown.style.visibility = 'visible';
-	}
-};
-
 function startSwipe(e) {
 	const swiperContainer = document.querySelector('#swiper-container');
 
@@ -260,49 +206,40 @@ function startSwipe(e) {
 	swiperContainer.style.transition = 'none';
 }
 
-function endSwipe(e) {
+function endSwipe(e, buttonDirectionClicked) {
 	const swiperContainer = document.querySelector('#swiper-container');
 
 	const threshold = SWIPE_TOLERANCE;
 	const distance = startY - e.clientY;
 
-	if (Math.abs(distance) > threshold) {
-		if (distance > 0) {
-			activeSlide++;
-		} else if (distance < 0) {
-			activeSlide--;
+	if (!buttonDirectionClicked) {
+		if (Math.abs(distance) > threshold) {
+			if (distance > 0) {
+				activeSlide++;
+			} else if (distance < 0) {
+				activeSlide--;
+			}
 		}
+	} else if (buttonDirectionClicked === 'down') {
+		activeSlide++;
+	} else if (buttonDirectionClicked === 'up') {
+		activeSlide--;
 	}
 
 	swiperContainer.style.transition = 'transform 0.3s';
 	swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
 
-	console.log('activeSlide', activeSlide);
-	console.log('renderedSlides - 1', renderedSlides - 1);
-
 	if (activeSlide >= renderedSlides - 1) {
-		console.log('hier');
 		setTimeout(() => {
 			swiperContainer.style.transition = 'none';
 			activeSlide = slideCount - 1;
 			swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
-			/* swiperContainer.style.transition = 'none';
-			activeSlide = slideCount;
-			swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`; */
-			/* setTimeout(() => {
-				swiperContainer.style.transition = 'transform 0.3s';
-				console.log('transform');
-			}, 50); */
 		}, 300);
 	} else if (activeSlide <= 0) {
-		console.log('da');
 		setTimeout(() => {
 			swiperContainer.style.transition = 'none';
 			activeSlide = slideCount;
 			swiperContainer.style.transform = `translateY(${-activeSlide * imageContainerHeight}px)`;
-			/* 			setTimeout(() => {
-				swiperContainer.style.transition = 'transform 0.3s';
-			}, 50); */
 		}, 300);
 	}
 }
@@ -311,8 +248,8 @@ const addEventListeners = () => {
 	const buttonUp = document.querySelector('button.up');
 	const buttonDown = document.querySelector('button.down');
 
-	buttonUp.addEventListener('click', handleButtonUpClick);
-	buttonDown.addEventListener('click', handleButtonDownClick);
+	buttonUp.addEventListener('click', (e) => endSwipe(e, 'up'));
+	buttonDown.addEventListener('click', (e) => endSwipe(e, 'down'));
 
 	const swiper = document.querySelector('#swiper-container');
 
