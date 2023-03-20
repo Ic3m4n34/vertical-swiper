@@ -118,11 +118,6 @@ const generateImageNode = (url, linkUrl) => {
 	return link;
 };
 
-const parsePixelValue = (value) => {
-	const parsedValue = value.replace('px', '');
-	return +parsedValue;
-};
-
 // create button node
 const generateButton = (chevronDirection) => {
 	const button = document.createElement('button');
